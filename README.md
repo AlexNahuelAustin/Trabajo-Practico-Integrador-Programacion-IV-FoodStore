@@ -48,29 +48,70 @@ pedido ya confirmado no cambien.
 
 ## Instalación y ejecución del backend
 
+**1. Crear la base de datos**
+
 ```bash
-# 1. Crear la base de datos
 psql -U postgres -c "CREATE DATABASE foodstore_db;"
+```
 
-# 2. Ubicarse en la carpeta del backend
+**2. Ubicarse en la carpeta del backend**
+
+```bash
 cd backend
+```
 
-# 3. Crear y activar el entorno virtual
+**3. Crear el entorno virtual**
+
+```bash
 python -m venv .venv
-.venv\Scripts\activate       # Windows
-source .venv/bin/activate    # Linux / macOS
+```
 
-# 4. Instalar las dependencias
+**4. Activar el entorno virtual**
+
+En Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+En Linux o macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+**5. Instalar las dependencias**
+
+```bash
 pip install -r requirements.txt
+```
 
-# 5. Configurar las variables de entorno
-copy .env.example .env       # Windows
-cp .env.example .env         # Linux / macOS
+**6. Configurar las variables de entorno**
 
-# 6. Cargar los datos iniciales (admin, categorías y productos)
+En Windows:
+
+```powershell
+copy .env.example .env
+```
+
+En Linux o macOS:
+
+```bash
+cp .env.example .env
+```
+
+Luego editar `backend/.env` y completar `DATABASE_URL` con la contraseña real
+de PostgreSQL, y `SECRET_KEY` con una clave de al menos 32 caracteres.
+
+**7. Cargar los datos iniciales (admin, categorías y productos)**
+
+```bash
 python -m app.db.seed
+```
 
-# 7. Levantar el servidor de desarrollo
+**8. Levantar el servidor de desarrollo**
+
+```bash
 uvicorn app.main:app --reload
 ```
 
@@ -80,23 +121,45 @@ interactiva se genera automáticamente en `http://localhost:8000/docs` y en
 
 ## Instalación y ejecución del frontend
 
+**1. Ubicarse en la carpeta del frontend**
+
 ```bash
-# 1. Ubicarse en la carpeta del frontend
 cd frontend
+```
 
-# 2. Configurar las variables de entorno
-copy .env.example .env       # Windows
-cp .env.example .env         # Linux / macOS
+**2. Configurar las variables de entorno**
 
-# 3. Instalar las dependencias
+En Windows:
+
+```powershell
+copy .env.example .env
+```
+
+En Linux o macOS:
+
+```bash
+cp .env.example .env
+```
+
+**3. Instalar las dependencias**
+
+```bash
 pnpm install
+```
 
-# 4. Verificar que el proyecto compila (chequeo de tipos de TypeScript)
+**4. Verificar que el proyecto compila (chequeo de tipos de TypeScript)**
+
+```bash
 pnpm build
+```
 
-# 5. Levantar el servidor de desarrollo
+**5. Levantar el servidor de desarrollo**
+
+```bash
 pnpm dev
 ```
+
+La aplicación queda disponible en `http://localhost:5173`.
 
 La aplicación queda disponible en `http://localhost:5173`.
 
