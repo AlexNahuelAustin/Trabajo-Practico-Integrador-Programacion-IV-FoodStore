@@ -1,0 +1,56 @@
+### Food Store API - Autenticación
+### Requiere la extensión "REST Client" de VS Code.
+### La cookie HttpOnly se guarda sola entre peticiones.
+### OJO: siempre localhost, nunca 127.0.0.1 (SameSite=Lax).
+
+@base = http://localhost:8000/api/v1
+
+### 1. Registrar un usuario nuevo (siempre nace con rol "user")
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "alex",
+  "full_name": "Alex Nahuel Austin",
+  "email": "alex@foodstore.com",
+  "password": "Alex1234!"
+}
+
+### 2. Username repetido -> 400
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "alex",
+  "full_name": "Otro Alex",
+  "email": "otro@foodstore.com",
+  "password": "Alex1234!"
+}
+
+### 3. Login del admin (viene del seed) -> deja la cookie access_token
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=Admin1234!
+
+### 4. Login con contraseña incorrecta -> 401
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=incorrecta
+
+### 5. Quién soy (usa la cookie del login anterior)
+GET {{base}}/auth/me
+
+### 6. Login del usuario común
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=alex&password=Alex1234!
+
+### 7. Cerrar sesión -> borra la cookie
+POST {{base}}/auth/logout
+
+### 8. Después del logout, /me debe dar 401
+GET {{base}}/auth/me
+

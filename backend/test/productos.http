@@ -1,0 +1,103 @@
+### Food Store API - Productos
+### Las lecturas son públicas; crear, actualizar, borrar y stock piden admin.
+### La respuesta del listado es { "total": n, "items": [...] }
+
+@base = http://localhost:8000/api/v1
+
+### 1. Listar productos (público, primera página)
+GET {{base}}/productos
+
+### 2. Paginación: segunda página de a 3
+GET {{base}}/productos?skip=3&limit=3
+
+### 3. Búsqueda parcial por nombre
+GET {{base}}/productos?search=pizza
+
+### 4. Filtrar por categoría
+GET {{base}}/productos?categoria_id=1
+
+### 5. Solo los disponibles
+GET {{base}}/productos?disponible=true
+
+### 6. Filtros combinados
+GET {{base}}/productos?categoria_id=2&disponible=true&limit=5
+
+### 7. limit fuera de rango -> 422 (el máximo es 100)
+GET {{base}}/productos?limit=500
+
+### 8. Detalle de un producto con su categoría (público)
+GET {{base}}/productos/1
+
+### 9. Producto inexistente -> 404
+GET {{base}}/productos/999
+
+### --- A partir de acá hay que estar logueado como admin ---
+
+### 10. Crear un producto
+POST {{base}}/productos
+Content-Type: application/json
+
+{
+  "nombre": "Pizza Fugazzeta",
+  "descripcion": "Muzzarella y mucha cebolla",
+  "precio_base": 11000,
+  "imagen_url": null,
+  "stock": 12,
+  "categoria_id": 1
+}
+
+### 11. Precio negativo -> 422
+POST {{base}}/productos
+Content-Type: application/json
+
+{
+  "nombre": "Pizza Imposible",
+  "descripcion": "Precio inválido",
+  "precio_base": -500,
+  "stock": 5,
+  "categoria_id": 1
+}
+
+### 12. Categoría inexistente -> 404
+POST {{base}}/productos
+Content-Type: application/json
+
+{
+  "nombre": "Producto Huérfano",
+  "descripcion": "Sin categoría válida",
+  "precio_base": 1000,
+  "stock": 5,
+  "categoria_id": 999
+}
+
+### 13. Actualizar un producto (parcial)
+PUT {{base}}/productos/9
+Content-Type: application/json
+
+{
+  "precio_base": 12500
+}
+
+### 14. Reponer stock y marcarlo disponible
+PATCH {{base}}/productos/9/stock
+Content-Type: application/json
+
+{
+  "stock": 30,
+  "disponible": true
+}
+
+### 15. Dejarlo sin stock -> no disponible
+PATCH {{base}}/productos/9/stock
+Content-Type: application/json
+
+{
+  "stock": 0,
+  "disponible": false
+}
+
+### 16. Baja lógica
+DELETE {{base}}/productos/9
+
+### 17. Ya no aparece en el listado público
+GET {{base}}/productos?search=fugazzeta

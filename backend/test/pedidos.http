@@ -1,0 +1,219 @@
+### Food Store API - Pedidos
+### Es el módulo con las reglas de negocio (RN-01 a RN-06).
+### Correr las peticiones en orden: cada una depende de la anterior.
+
+@base = http://localhost:8000/api/v1
+
+### ============================================
+### PARTE 1: el cliente arma su pedido
+### ============================================
+
+### 1. Login como usuario común
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=alex&password=Alex1234!
+
+### 2. Ver el stock de un producto ANTES de pedir (anotá el número)
+GET {{base}}/productos/1
+
+### 3. Crear un pedido válido -> 201
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 1, "cantidad": 2 },
+    { "producto_id": 3, "cantidad": 4 }
+  ],
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Av. Savio 1234, San Nicolás",
+  "notas": "Tocar timbre, no funciona el portero"
+}
+
+### 4. El stock bajó en 2 (RN: descuenta stock al confirmar)
+GET {{base}}/productos/1
+
+### ============================================
+### PARTE 2: validaciones al crear
+### ============================================
+
+### 5. Producto repetido en el mismo pedido -> 400
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 1, "cantidad": 1 },
+    { "producto_id": 1, "cantidad": 3 }
+  ],
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 6. Stock insuficiente -> 400
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 1, "cantidad": 9999 }
+  ],
+  "forma_pago": "TRANSFERENCIA",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 7. Producto inexistente -> 404
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 999, "cantidad": 1 }
+  ],
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 8. Carrito vacío -> 422
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [],
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 9. Cantidad cero -> 422
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 1, "cantidad": 0 }
+  ],
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 10. Forma de pago inválida -> 422
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 1, "cantidad": 1 }
+  ],
+  "forma_pago": "BITCOIN",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### ============================================
+### PARTE 3: el cliente consulta lo suyo
+### ============================================
+
+### 11. Mis pedidos (siendo user, solo ve los propios)
+GET {{base}}/pedidos
+
+### 12. Detalle con sus líneas (nombre y precio copiados al momento de la compra)
+GET {{base}}/pedidos/1
+
+### 13. Un user NO puede ver el resumen del admin -> 403
+GET {{base}}/pedidos/resumen
+
+### ============================================
+### PARTE 4: el admin maneja los estados
+### ============================================
+
+### 14. Login como admin
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=Admin1234!
+
+### 15. El admin ve TODOS los pedidos
+GET {{base}}/pedidos
+
+### 16. Indicadores del panel
+GET {{base}}/pedidos/resumen
+
+### 17. PENDIENTE -> EN_PREPARACION (transición válida)
+PATCH {{base}}/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado": "EN_PREPARACION"
+}
+
+### 18. EN_PREPARACION -> ENTREGADO (transición válida)
+PATCH {{base}}/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado": "ENTREGADO"
+}
+
+### 19. ENTREGADO -> PENDIENTE: no se puede volver atrás -> 400
+PATCH {{base}}/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado": "PENDIENTE"
+}
+
+### 20. ENTREGADO -> CANCELADO: un entregado no se cancela -> 400
+PATCH {{base}}/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado": "CANCELADO"
+}
+
+### 21. Estado que no existe -> 422
+PATCH {{base}}/pedidos/1/estado
+Content-Type: application/json
+
+{
+  "estado": "EN_CAMINO"
+}
+
+### ============================================
+### PARTE 5: cancelación y restitución de stock
+### ============================================
+
+### 22. Volver al usuario común
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=alex&password=Alex1234!
+
+### 23. Crear un pedido nuevo para cancelarlo
+POST {{base}}/pedidos
+Content-Type: application/json
+
+{
+  "items": [
+    { "producto_id": 5, "cantidad": 3 }
+  ],
+  "forma_pago": "TRANSFERENCIA",
+  "direccion_entrega": "Av. Savio 1234"
+}
+
+### 24. Stock del producto 5 después de pedir
+GET {{base}}/productos/5
+
+### 25. Cancelar el pedido propio (está PENDIENTE) -> se devuelve el stock
+PATCH {{base}}/pedidos/2/cancelar
+
+### 26. El stock del producto 5 volvió a su valor original
+GET {{base}}/productos/5
+
+### 27. Cancelar dos veces -> 400
+PATCH {{base}}/pedidos/2/cancelar
+
+### 28. Cancelar un pedido ajeno -> 403
+PATCH {{base}}/pedidos/1/cancelar
+
+### 29. Pedido inexistente -> 404
+GET {{base}}/pedidos/999

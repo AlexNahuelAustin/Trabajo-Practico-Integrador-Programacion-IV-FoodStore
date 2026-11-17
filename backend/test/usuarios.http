@@ -1,0 +1,25 @@
+### Food Store API - Usuarios (solo admin)
+### Antes de correr esto hay que estar logueado como admin (auth.http, petición 3).
+
+@base = http://localhost:8000/api/v1
+
+### 1. Listar todos los usuarios
+GET {{base}}/admin/usuarios
+
+### 2. Desactivar la cuenta del usuario 2 (disabled = true)
+POST {{base}}/admin/usuarios/2/desactivar
+
+### 3. Reactivar la cuenta del usuario 2
+POST {{base}}/admin/usuarios/2/activar
+
+### 4. Usuario inexistente -> 404
+POST {{base}}/admin/usuarios/999/desactivar
+
+### 5. Prueba de autorización: logueate como "alex" (rol user)
+POST {{base}}/auth/token
+Content-Type: application/x-www-form-urlencoded
+
+username=alex&password=Alex1234!
+
+### 6. Siendo user, listar usuarios -> 403 Forbidden
+GET {{base}}/admin/usuarios

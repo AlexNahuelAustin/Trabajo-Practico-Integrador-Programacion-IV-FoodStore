@@ -1,0 +1,28 @@
+# ===== Backend (Python) =====
+backend/.venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Variables de entorno: nunca se suben
+.env
+backend/.env
+frontend/.env
+
+# Base de datos local de desarrollo
+*.db
+*.sqlite3
+
+# ===== Frontend (Node) =====
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# ===== Editores y sistema =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
