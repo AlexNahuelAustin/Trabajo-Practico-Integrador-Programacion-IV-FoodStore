@@ -161,8 +161,6 @@ pnpm dev
 
 La aplicación queda disponible en `http://localhost:5173`.
 
-La aplicación queda disponible en `http://localhost:5173`.
-
 ## Variables de entorno
 
 ### Backend (`backend/.env`)
