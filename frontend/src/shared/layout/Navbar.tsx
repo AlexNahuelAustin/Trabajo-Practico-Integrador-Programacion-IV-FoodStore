@@ -98,7 +98,7 @@ export function Navbar() {
         </div>
 
         {/* Fila inferior: toda la navegación, centrada. */}
-        <nav className="mt-1 flex flex-wrap items-center justify-center gap-1">
+        <nav className="-mt-4 flex flex-wrap items-center justify-center gap-1">
           <NavLink to="/" end className={clases}>
             Catálogo
           </NavLink>
