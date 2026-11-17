@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Optional
 
-from pydantic import StringConstraints, field_validator
+from pydantic import StringConstraints
 from sqlmodel import Field, SQLModel
 
 from app.modules.pedidos.models import EstadoPedido, FormaPago
@@ -25,17 +25,8 @@ class PedidoCreate(SQLModel):
     forma_pago: FormaPago
     direccion_entrega: DireccionEntrega
     notas: Optional[str] = Field(default=None, max_length=500)
-
-    @field_validator("items")
-    @classmethod
-    def validar_productos_no_repetidos(
-        cls, items: list[ItemPedidoCreate]
-    ) -> list[ItemPedidoCreate]:
-        # RN-01: un mismo producto no se repite entre los ítems
-        identificadores = [item.producto_id for item in items]
-        if len(identificadores) != len(set(identificadores)):
-            raise ValueError("No se puede repetir el mismo producto en dos ítems")
-        return items
+    # RN-01: que ningún producto se repita entre los ítems lo valida el
+    # Service (ProductoRepetido -> 400), no el schema, para no responder 422.
 
 
 class CambioEstado(SQLModel):

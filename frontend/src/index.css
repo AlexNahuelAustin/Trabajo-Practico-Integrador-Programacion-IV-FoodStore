@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Habilita dark: activado por la clase .dark en <html>, no por el sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/*
+ * Color de texto base: varios componentes (nombres de producto, precios,
+ * celdas de tabla, etc.) no fijan su propio color y heredan este. Sin esto
+ * quedaba el negro por defecto del navegador, ilegible sobre fondos oscuros.
+ */
+@layer base {
+  body {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+}
+
+/* Brillo dorado pulsante para el logo del header. */
+@keyframes brillo-dorado {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.55));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.95));
+  }
+}
+
+.logo-brillo {
+  animation: brillo-dorado 2.5s ease-in-out infinite;
+}
