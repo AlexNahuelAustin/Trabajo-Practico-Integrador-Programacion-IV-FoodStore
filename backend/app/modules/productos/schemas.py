@@ -13,9 +13,9 @@ NombreProducto = Annotated[
 
 class ProductoCreate(SQLModel):
     nombre: NombreProducto
-    descripcion: str = Field(default="", max_length=1000)
+    descripcion: Optional[str] = Field(default=None, max_length=1000)
     precio_base: float = Field(ge=0)
-    imagen_url: str = Field(default="", max_length=500)
+    imagen_url: Optional[str] = Field(default=None, max_length=500)
     stock: int = Field(default=0, ge=0)
     disponible: bool = True
     categoria_id: int = Field(gt=0)

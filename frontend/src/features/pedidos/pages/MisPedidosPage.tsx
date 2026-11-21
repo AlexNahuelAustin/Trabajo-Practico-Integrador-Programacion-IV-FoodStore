@@ -15,6 +15,7 @@ import { Paginacion } from "@/shared/components/Paginacion";
 import { SkeletonFilas } from "@/shared/components/Skeleton";
 import { Button } from "@/shared/ui/Button";
 import { Modal } from "@/shared/ui/Modal";
+import { useAuthStore } from "@/store/authStore";
 import { useNotificationStore } from "@/store/notificationStore";
 
 const POR_PAGINA = 20;
@@ -29,6 +30,15 @@ export function MisPedidosPage() {
   });
   const cancelar = useCancelarPedido();
   const mostrar = useNotificationStore((estado) => estado.mostrar);
+  const usuario = useAuthStore((estado) => estado.usuario);
+
+  // GET /pedidos devuelve todos los pedidos cuando el rol es admin. Esta es la
+  // vista de cliente, así que se queda solo con los propios: la gestión de los
+  // pedidos ajenos vive en el panel de administración (/admin/pedidos).
+  const esAdmin = usuario?.role === "admin";
+  const pedidosPropios = (data?.items ?? []).filter(
+    (pedido) => pedido.usuario_id === usuario?.id,
+  );
 
   function cancelarPedido(pedido: Pedido) {
     const confirmado = window.confirm(
@@ -46,6 +56,17 @@ export function MisPedidosPage() {
     <div>
       <h1 className="mb-6 text-2xl font-bold">Mis pedidos</h1>
 
+      {esAdmin && (
+        <p className="mb-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+          Esta pantalla muestra solo tus pedidos. Para ver y gestionar los de
+          todos los clientes, entrá a{" "}
+          <Link to="/admin/pedidos" className="font-semibold underline">
+            Pedidos del panel
+          </Link>
+          .
+        </p>
+      )}
+
       {isPending && <SkeletonFilas cantidad={5} />}
 
       {isError && (
@@ -55,7 +76,7 @@ export function MisPedidosPage() {
         />
       )}
 
-      {data && data.items.length === 0 && (
+      {data && pedidosPropios.length === 0 && (
         <EstadoVacio
           titulo="Todavía no hiciste ningún pedido"
           descripcion="Cuando confirmes uno, lo vas a ver acá con su estado."
@@ -70,10 +91,10 @@ export function MisPedidosPage() {
         />
       )}
 
-      {data && data.items.length > 0 && (
+      {data && pedidosPropios.length > 0 && (
         <>
           <TablaPedidos
-            pedidos={data.items}
+            pedidos={pedidosPropios}
             acciones={(pedido) => (
               <>
                 <Button
@@ -83,27 +104,30 @@ export function MisPedidosPage() {
                 >
                   Ver detalle
                 </Button>
-                {/* Solo se puede cancelar en PENDIENTE (RN-04) */}
-                {pedido.estado === "PENDIENTE" && (
-                  <Button
-                    tamanio="sm"
-                    variante="peligro"
-                    disabled={cancelar.isPending}
-                    onClick={() => cancelarPedido(pedido)}
-                  >
-                    Cancelar
-                  </Button>
-                )}
+                {/* Solo el dueño y solo en PENDIENTE (RN-04) */}
+                {pedido.usuario_id === usuario?.id &&
+                  pedido.estado === "PENDIENTE" && (
+                    <Button
+                      tamanio="sm"
+                      variante="peligro"
+                      disabled={cancelar.isPending}
+                      onClick={() => cancelarPedido(pedido)}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
               </>
             )}
           />
 
-          <Paginacion
-            total={data.total}
-            skip={skip}
-            limit={POR_PAGINA}
-            onCambiarSkip={setSkip}
-          />
+          {!esAdmin && (
+            <Paginacion
+              total={data.total}
+              skip={skip}
+              limit={POR_PAGINA}
+              onCambiarSkip={setSkip}
+            />
+          )}
         </>
       )}
 

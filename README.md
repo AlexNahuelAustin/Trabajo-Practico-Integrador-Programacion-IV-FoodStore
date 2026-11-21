@@ -4,9 +4,9 @@ Trabajo Práctico Integrador - Programación 4 - UTN FRSN
 
 Autor: Austin Alex Nahuel
 
-URL del repositorio: <URL_DEL_REPOSITORIO>
+URL del repositorio: <https://github.com/AlexNahuelAustin/Trabajo-Practico-Integrador-Programacion-IV-FoodStore>
 
-Video de demostración: <URL_DEL_VIDEO>
+Video de demostración: <https://youtu.be/3RVxTGe5XzM>
 
 ## Descripción
 
@@ -53,6 +53,19 @@ pedido ya confirmado no cambien.
 ```bash
 psql -U postgres -c "CREATE DATABASE foodstore_db;"
 ```
+
+En Windows, el instalador de PostgreSQL no agrega `psql` al PATH. Si el
+comando no se encuentra, hay dos alternativas:
+
+- Ejecutarlo con la ruta completa, por ejemplo
+  `"C:\Program Files\PostgreSQL\18\bin\psql" -U postgres -c "CREATE DATABASE foodstore_db;"`
+  (cambiar `18` por la versión instalada).
+- Crearla a mano desde pgAdmin: clic derecho sobre **Databases**, luego
+  **Create → Database...**, y en el campo **Database** escribir
+  `foodstore_db`.
+
+El nombre de la base debe coincidir con el que figura en `DATABASE_URL`
+dentro de `backend/.env`.
 
 **2. Ubicarse en la carpeta del backend**
 
@@ -158,8 +171,6 @@ pnpm build
 ```bash
 pnpm dev
 ```
-
-La aplicación queda disponible en `http://localhost:5173`.
 
 La aplicación queda disponible en `http://localhost:5173`.
 

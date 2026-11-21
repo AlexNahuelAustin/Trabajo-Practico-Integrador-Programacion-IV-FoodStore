@@ -56,9 +56,9 @@ class ProductoService:
 
             producto = Producto(
                 nombre=datos.nombre,
-                descripcion=datos.descripcion,
+                descripcion=datos.descripcion or "",
                 precio_base=datos.precio_base,
-                imagen_url=datos.imagen_url,
+                imagen_url=datos.imagen_url or "",
                 stock=datos.stock,
                 disponible=datos.disponible,
                 categoria_id=datos.categoria_id,

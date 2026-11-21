@@ -11,7 +11,7 @@ NombreCategoria = Annotated[
 
 class CategoriaCreate(SQLModel):
     nombre: NombreCategoria
-    descripcion: str = Field(default="", max_length=500)
+    descripcion: Optional[str] = Field(default=None, max_length=500)
 
 
 class CategoriaUpdate(SQLModel):

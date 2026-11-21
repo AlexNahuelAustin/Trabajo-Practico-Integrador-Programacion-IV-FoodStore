@@ -40,7 +40,7 @@ class CategoriaService:
                 raise NombreDuplicado(datos.nombre)
 
             categoria = Categoria(
-                nombre=datos.nombre, descripcion=datos.descripcion
+                nombre=datos.nombre, descripcion=datos.descripcion or ""
             )
             uow.categorias.add(categoria)
             return CategoriaRead.model_validate(categoria)
