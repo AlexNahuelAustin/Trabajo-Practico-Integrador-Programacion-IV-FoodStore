@@ -1,6 +1,6 @@
 # Food Store - Sistema de Pedidos de Comida
 
-Trabajo Práctico Integrador - Programación 4 - UTN FRSN
+Trabajo Práctico Integrador - Programación 4
 
 Autor: Austin Alex Nahuel
 
