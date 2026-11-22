@@ -116,6 +116,12 @@ cp .env.example .env
 Luego editar `backend/.env` y completar `DATABASE_URL` con la contraseña real
 de PostgreSQL, y `SECRET_KEY` con una clave de al menos 32 caracteres.
 
+Para generar la `SECRET_KEY` al azar:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
 **7. Cargar los datos iniciales (admin, categorías y productos)**
 
 ```bash
